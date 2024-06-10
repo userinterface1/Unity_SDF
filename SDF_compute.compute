@@ -1,0 +1,124 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+#define DIV 9999.380
+#define WIDTH 8192
+#define HEIGHT 5734
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> Input;
+RWTexture2D<float4> Output;
+int step;
+float4 seedColor;
+
+[numthreads(16,16,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float4 inputPixel = Input[id.xy];
+    Output[id.xy] = inputPixel;
+    float4 outputPixel = float4(90.509f, 90.509f, 1, 1);
+    
+    if (length(seedColor - Input[id.xy]) < 0.001f)
+    {
+        return;
+    }
+    
+    int2 up = int2(id.x, id.y + step);
+    if (up.x >= 0 && up.y >= 0 && up.x < WIDTH && up.y < HEIGHT && Input[up].z <= 0.001f)
+    {
+        int2 offset = up - id.xy;
+        float4 offsetPixel = Input[up] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 down = int2(id.x, id.y - step);
+    if (down.x >= 0 && down.y >= 0 && down.x < WIDTH && down.y < HEIGHT && Input[down].z <= 0.001f)
+    {
+        int2 offset = down - id.xy;
+        float4 offsetPixel = Input[down] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 right = int2(id.x + step, id.y);
+    if (right.x >= 0 && right.y >= 0 && right.x < WIDTH && right.y < HEIGHT && Input[right].z <= 0.001f)
+    {
+        int2 offset = right - id.xy;
+        float4 offsetPixel = Input[right] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 left = int2(id.x - step, id.y);
+    if (left.x >= 0 && left.y >= 0 && left.x < WIDTH && left.y < HEIGHT && Input[left].z <= 0.001f)
+    {
+        int2 offset = left - id.xy;
+        float4 offsetPixel = Input[left] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    //
+    int2 upleft = int2(id.x - step, id.y + step);
+    if (upleft.x >= 0 && upleft.y >= 0 && upleft.x < WIDTH && upleft.y < HEIGHT && Input[upleft].z <= 0.001f)
+    {
+        int2 offset = upleft - id.xy;
+        float4 offsetPixel = Input[upleft] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 upright = int2(id.x + step, id.y + step);
+    if (upright.x >= 0 && upright.y >= 0 && upright.x < WIDTH && upright.y < HEIGHT && Input[upright].z <= 0.001f)
+    {
+        int2 offset = upright - id.xy;
+        float4 offsetPixel = Input[upright] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 downleft = int2(id.x - step, id.y - step);
+    if (downleft.x >= 0 && downleft.y >= 0 && downleft.x < WIDTH && downleft.y < HEIGHT && Input[downleft].z <= 0.001f)
+    {
+        int2 offset = downleft - id.xy;
+        float4 offsetPixel = Input[downleft] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+    
+    int2 downright = int2(id.x - step, id.y + step);
+    if (downright.x >= 0 && downright.y >= 0 && downright.x < WIDTH && downright.y < HEIGHT && Input[downright].z <= 0.001f)
+    {
+        int2 offset = downright - id.xy;
+        float4 offsetPixel = Input[downright] + float4(offset.x / DIV, offset.y / DIV, 0, 1);
+        if (length(offsetPixel) < length(outputPixel))
+        {
+            outputPixel = offsetPixel;
+            Output[id.xy] = outputPixel;
+        }
+    }
+}
+
